@@ -8,7 +8,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "scripts": {
     "start": "tsdx watch",
@@ -47,18 +47,18 @@
   ],
   "name": "@renft/solana-sdk",
   "author": "seendsouza (https://github.com/seendsouza)",
-  "module": "dist/sdk.esm.js",
+  "module": "dist/solana-sdk.esm.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/re-nft/sdk.git"
+    "url": "https://github.com/re-nft/solana-sdk.git"
   },
   "size-limit": [
     {
-      "path": "dist/sdk.cjs.production.min.js",
+      "path": "dist/solana-sdk.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/sdk.esm.js",
+      "path": "dist/solana-sdk.esm.js",
       "limit": "10 KB"
     }
   ],
@@ -70,17 +70,17 @@
     "typescript": "^4.2.4"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.10.2",
+    "@size-limit/preset-small-lib": "^6.0.4",
     "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.2.18",
     "chai": "^4.3.4",
     "husky": "^6.0.0",
-    "size-limit": "^4.10.2",
+    "size-limit": "^6.0.4",
     "tsdx": "^0.14.1",
     "tslib": "^2.2.0"
   },
   "resolutions": {
-    "postcss": "^7.0.36",
+    "postcss": "^8.2.15",
     "glob-parent": "^5.1.2",
     "ws": "^7.4.6",
     "normalize-url": "^4.5.1",

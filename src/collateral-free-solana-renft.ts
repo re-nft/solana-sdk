@@ -20,6 +20,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
     initializerTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
     escrowAccount: PublicKey,
+    adminStateAccount: PublicKey,
     dailyRentPrice: u64,
     maxRenters: number,
     maxRentDuration: number
@@ -30,6 +31,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       { pubkey: initializerTokenAccount, isSigner: false, isWritable: false },
       { pubkey: pdaTokenAccount, isSigner: false, isWritable: true },
       { pubkey: escrowAccount, isSigner: false, isWritable: true },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: false },
       { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
       { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
     ];
@@ -135,7 +137,9 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
     pdaTokenAccount: PublicKey,
     renterTokenAccount: PublicKey,
     initializerTokenAccount: PublicKey,
+    adminTokenAccount: PublicKey,
     escrowAccount: PublicKey,
+    adminStateAccount: PublicKey,
     rentedAt: u64
   ): Instruction {
     const keys = [
@@ -143,7 +147,9 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       { pubkey: pdaTokenAccount, isSigner: false, isWritable: true },
       { pubkey: renterTokenAccount, isSigner: false, isWritable: true },
       { pubkey: initializerTokenAccount, isSigner: false, isWritable: true },
+      { pubkey: adminTokenAccount, isSigner: false, isWritable: true },
       { pubkey: escrowAccount, isSigner: false, isWritable: true },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: false },
       { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
       {
         pubkey: COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID,
@@ -172,13 +178,17 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
     lender: Keypair,
     pdaTokenAccount: PublicKey,
     initializerTokenAccount: PublicKey,
-    escrowAccount: PublicKey
+    adminTokenAccount: PublicKey,
+    escrowAccount: PublicKey,
+    adminStateAccount: PublicKey
   ): Instruction {
     const keys = [
       { pubkey: lender.publicKey, isSigner: true, isWritable: false },
       { pubkey: pdaTokenAccount, isSigner: false, isWritable: true },
       { pubkey: initializerTokenAccount, isSigner: false, isWritable: true },
+      { pubkey: adminTokenAccount, isSigner: false, isWritable: true },
       { pubkey: escrowAccount, isSigner: false, isWritable: true },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: false },
       { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
       {
         pubkey: COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID,
@@ -197,6 +207,85 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
     const signer: Signer = {
       publicKey: lender.publicKey,
       secretKey: lender.secretKey,
+    };
+    return {
+      transactionInstructions: [transactionInstruction],
+      signers: [signer],
+    };
+  }
+  public initializeAdminStateIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    fee: number
+  ): Instruction {
+    const keys = [
+      { pubkey: admin.publicKey, isSigner: true, isWritable: false },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: true },
+    ];
+    const programId = COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID;
+    const transactionInstruction = new TransactionInstruction({
+      keys,
+      programId,
+      data: encodeInstruction({
+        InitializeAdminState: { fee },
+      }),
+    });
+    const signer: Signer = {
+      publicKey: admin.publicKey,
+      secretKey: admin.secretKey,
+    };
+    return {
+      transactionInstructions: [transactionInstruction],
+      signers: [signer],
+    };
+  }
+  public setFeeIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    fee: number
+  ): Instruction {
+    const keys = [
+      { pubkey: admin.publicKey, isSigner: true, isWritable: false },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: true },
+    ];
+    const programId = COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID;
+    const transactionInstruction = new TransactionInstruction({
+      keys,
+      programId,
+      data: encodeInstruction({
+        SetFee: { fee },
+      }),
+    });
+    const signer: Signer = {
+      publicKey: admin.publicKey,
+      secretKey: admin.secretKey,
+    };
+    return {
+      transactionInstructions: [transactionInstruction],
+      signers: [signer],
+    };
+  }
+  public setPayableAccount(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    adminTokenAccount: PublicKey
+  ): Instruction {
+    const keys = [
+      { pubkey: admin.publicKey, isSigner: true, isWritable: false },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: true },
+      { pubkey: adminTokenAccount, isSigner: false, isWritable: true },
+    ];
+    const programId = COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID;
+    const transactionInstruction = new TransactionInstruction({
+      keys,
+      programId,
+      data: encodeInstruction({
+        SetPayableAccount: {},
+      }),
+    });
+    const signer: Signer = {
+      publicKey: admin.publicKey,
+      secretKey: admin.secretKey,
     };
     return {
       transactionInstructions: [transactionInstruction],

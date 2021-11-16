@@ -29,6 +29,11 @@ export interface EscrowState {
   rentings: Renting[];
 }
 
+export interface AdminState {
+  fee: number;
+  tokenAccounts: PublicKey[];
+}
+
 export interface TransactionPayload {
   transaction: Transaction;
   signers: Signer[];
@@ -46,6 +51,7 @@ export interface ICollateralFreeSolanaReNFT {
     initializerTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
     escrowAccount: PublicKey,
+    adminStateAccount: PublicKey,
     dailyRentPrice: u64,
     maxRenters: number,
     maxRentDuration: number
@@ -70,13 +76,32 @@ export interface ICollateralFreeSolanaReNFT {
     pdaTokenAccount: PublicKey,
     renterTokenAccount: PublicKey,
     initializerTokenAccount: PublicKey,
+    adminTokenAccount: PublicKey,
     escrowAccount: PublicKey,
+    adminStateAccount: PublicKey,
     rentedAt: u64
   ): Instruction;
   claimRentIx(
     lender: Keypair,
     pdaTokenAccount: PublicKey,
     initializerTokenAccount: PublicKey,
-    escrowAccount: PublicKey
+    adminTokenAccount: PublicKey,
+    escrowAccount: PublicKey,
+    adminStateAccount: PublicKey
+  ): Instruction;
+  initializeAdminStateIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    fee: number
+  ): Instruction;
+  setFeeIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    fee: number
+  ): Instruction;
+  setPayableAccount(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    adminTokenAccount: PublicKey
   ): Instruction;
 }

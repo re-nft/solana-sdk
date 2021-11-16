@@ -13,7 +13,7 @@ import {
 } from '@solana/buffer-layout';
 import { PublicKey } from '@solana/web3.js';
 import { BN } from 'bn.js';
-import { EscrowState } from './types';
+import { AdminState, EscrowState } from './types';
 
 export class i64 extends BN {
   toBuffer(): Buffer {
@@ -78,6 +78,9 @@ INSTRUCTION_LAYOUT.addVariant(
 );
 INSTRUCTION_LAYOUT.addVariant(3, struct([ns64('rentedAt')]), 'StopRenting');
 INSTRUCTION_LAYOUT.addVariant(4, struct([]), 'ClaimRent');
+INSTRUCTION_LAYOUT.addVariant(5, struct([u32('fee')]), 'InitializeAdminState');
+INSTRUCTION_LAYOUT.addVariant(6, struct([u32('fee')]), 'SetFee');
+INSTRUCTION_LAYOUT.addVariant(7, struct([]), 'SetPayableAccount');
 
 export function encodeInstruction(instruction: LayoutObject) {
   const b = Buffer.alloc(100);
@@ -113,4 +116,22 @@ export function decodeEscrowStateData(b: Buffer): EscrowState {
   }
 
   return ESCROW_LAYOUT.decode(b) as EscrowState;
+}
+
+const NUM_MINT_TOKENS = 1582;
+export const ADMIN_STATE_LAYOUT = struct(
+  [
+    publicKeyLayout('pdaTokenAccount'),
+    seq(publicKeyLayout(), NUM_MINT_TOKENS, 'tokenAccounts'),
+  ],
+  'admin'
+);
+
+export function decodeAdminStateData(b: Buffer): AdminState {
+  const tokenAccountsLength = b.length - 4;
+  if (tokenAccountsLength < 0 || tokenAccountsLength % 32 != 0) {
+    throw 'Invalid buffer length.';
+  }
+
+  return ADMIN_STATE_LAYOUT.decode(b) as AdminState;
 }
