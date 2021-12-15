@@ -23,7 +23,7 @@ export class i64 extends BN {
       return b;
     }
     if (b.length > 8) {
-      throw 'i64 too large';
+      throw new Error('i64 too large');
     }
 
     const zeroPad = Buffer.alloc(8);
@@ -33,7 +33,7 @@ export class i64 extends BN {
 
   static fromBuffer(buffer: Buffer): i64 {
     if (buffer.length !== 8) {
-      throw `Invalid buffer length: ${buffer.length}`;
+      throw new Error(`Invalid buffer length: ${buffer.length}`);
     }
     // Assumes value is positive
     return new i64(
@@ -111,8 +111,8 @@ export const ESCROW_LAYOUT = struct(
 
 export function decodeEscrowStateData(b: Buffer): EscrowState {
   const rentingsLength = b.length - 114;
-  if (rentingsLength < 0 || rentingsLength % 43 != 0) {
-    throw 'Invalid buffer length.';
+  if (rentingsLength < 0 || rentingsLength % 43 !== 0) {
+    throw new Error('Invalid buffer length.');
   }
 
   return ESCROW_LAYOUT.decode(b) as EscrowState;
@@ -129,8 +129,8 @@ export const ADMIN_STATE_LAYOUT = struct(
 
 export function decodeAdminStateData(b: Buffer): AdminState {
   const tokenAccountsLength = b.length - 4;
-  if (tokenAccountsLength < 0 || tokenAccountsLength % 32 != 0) {
-    throw 'Invalid buffer length.';
+  if (tokenAccountsLength < 0 || tokenAccountsLength % 32 !== 0) {
+    throw new Error('Invalid buffer length.');
   }
 
   return ADMIN_STATE_LAYOUT.decode(b) as AdminState;

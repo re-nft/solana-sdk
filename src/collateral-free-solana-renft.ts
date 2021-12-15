@@ -3,7 +3,6 @@ import {
   PublicKey,
   Signer,
   Keypair,
-  SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
 import { u64, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { Instruction, ICollateralFreeSolanaReNFT } from './types';
@@ -32,7 +31,6 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       { pubkey: pdaTokenAccount, isSigner: false, isWritable: true },
       { pubkey: escrowAccount, isSigner: false, isWritable: true },
       { pubkey: adminStateAccount, isSigner: false, isWritable: false },
-      { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
       { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
     ];
     const programId = COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID;
