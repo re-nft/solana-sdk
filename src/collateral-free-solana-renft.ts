@@ -263,7 +263,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       signers: [signer],
     };
   }
-  public setPayableAccount(
+  public setPayableAccountIx(
     admin: Keypair,
     adminStateAccount: PublicKey,
     adminTokenAccount: PublicKey
