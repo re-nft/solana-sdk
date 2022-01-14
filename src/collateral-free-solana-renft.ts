@@ -5,6 +5,7 @@ import {
   Keypair,
 } from '@solana/web3.js';
 import { u64, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { i64 } from './layout';
 import { Instruction, ICollateralFreeSolanaReNFT } from './types';
 import { encodeInstruction } from './layout';
 
@@ -138,7 +139,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
     adminTokenAccount: PublicKey,
     escrowAccount: PublicKey,
     adminStateAccount: PublicKey,
-    rentedAt: u64
+    rentedAt: i64
   ): Instruction {
     const keys = [
       { pubkey: renter.publicKey, isSigner: true, isWritable: false },
@@ -178,7 +179,9 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
     initializerTokenAccount: PublicKey,
     adminTokenAccount: PublicKey,
     escrowAccount: PublicKey,
-    adminStateAccount: PublicKey
+    adminStateAccount: PublicKey,
+    renterAddress: PublicKey,
+    rentedAt: i64
   ): Instruction {
     const keys = [
       { pubkey: lender.publicKey, isSigner: true, isWritable: false },
@@ -199,7 +202,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       keys,
       programId,
       data: encodeInstruction({
-        ClaimRent: {},
+        ClaimRent: { renterAddress, rentedAt },
       }),
     });
     const signer: Signer = {

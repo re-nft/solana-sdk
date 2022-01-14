@@ -77,7 +77,11 @@ INSTRUCTION_LAYOUT.addVariant(
   'StartRenting'
 );
 INSTRUCTION_LAYOUT.addVariant(3, struct([ns64('rentedAt')]), 'StopRenting');
-INSTRUCTION_LAYOUT.addVariant(4, struct([]), 'ClaimRent');
+INSTRUCTION_LAYOUT.addVariant(
+  4,
+  struct([publicKeyLayout('renterAddress'), ns64('rentedAt')]),
+  'ClaimRent'
+);
 INSTRUCTION_LAYOUT.addVariant(5, struct([u32('fee')]), 'InitializeAdminState');
 INSTRUCTION_LAYOUT.addVariant(6, struct([u32('fee')]), 'SetFee');
 INSTRUCTION_LAYOUT.addVariant(7, struct([]), 'SetPayableAccount');
@@ -93,32 +97,36 @@ const renting_struct = struct([
   u16('rentAmount'),
   u8('rentDuration'),
 ]);
+
+const bucket_struct = struct([renting_struct, u32('hash'), u8('_align')]);
+
 export const ESCROW_LAYOUT = struct(
   [
     publicKeyLayout('pdaTokenAccount'),
-    publicKeyLayout('initializer'),
+    publicKeyLayout('lender'),
     publicKeyLayout('tempNftAccount'),
-    publicKeyLayout('initializerTokenAccount'),
+    publicKeyLayout('lenderTokenAccount'),
     nu64('dailyRentPrice'),
     u32('currentRenters'),
     u32('maxRenters'),
     u8('maxRentDuration'),
     u8('isInitialized'),
-    seq(renting_struct, greedy(renting_struct.span), 'rentings'),
+    seq(u8(), 6, '_align'),
+    seq(bucket_struct, greedy(bucket_struct.span), 'rentings'),
   ],
   'escrow'
 );
 
 export function decodeEscrowStateData(b: Buffer): EscrowState {
-  const rentingsLength = b.length - 114;
-  if (rentingsLength < 0 || rentingsLength % 43 !== 0) {
+  const rentingsLength = b.length - 152;
+  if (rentingsLength < 0 || rentingsLength % 48 !== 0) {
     throw new Error('Invalid buffer length.');
   }
 
   return ESCROW_LAYOUT.decode(b) as EscrowState;
 }
 
-const NUM_MINT_TOKENS = 1582;
+const NUM_MINT_TOKENS = 2;
 export const ADMIN_STATE_LAYOUT = struct(
   [
     publicKeyLayout('pdaTokenAccount'),

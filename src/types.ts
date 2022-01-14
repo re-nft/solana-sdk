@@ -16,6 +16,12 @@ export interface Renting {
   rentDuration: number;
 }
 
+export interface Bucket {
+  renting: Renting;
+  hash: number;
+  _align: number;
+}
+
 export interface EscrowState {
   pdaTokenAccount: PublicKey;
   initializer: PublicKey;
@@ -26,7 +32,8 @@ export interface EscrowState {
   maxRenters: number;
   maxRentDuration: number;
   isInitialized: boolean;
-  rentings: Renting[];
+  _align: number[];
+  rentings: Bucket[];
 }
 
 export interface AdminState {
@@ -79,7 +86,7 @@ export interface ICollateralFreeSolanaReNFT {
     adminTokenAccount: PublicKey,
     escrowAccount: PublicKey,
     adminStateAccount: PublicKey,
-    rentedAt: u64
+    rentedAt: i64
   ): Instruction;
   claimRentIx(
     lender: Keypair,
@@ -87,7 +94,9 @@ export interface ICollateralFreeSolanaReNFT {
     initializerTokenAccount: PublicKey,
     adminTokenAccount: PublicKey,
     escrowAccount: PublicKey,
-    adminStateAccount: PublicKey
+    adminStateAccount: PublicKey,
+    renterAddress: PublicKey,
+    rentedAt: i64
   ): Instruction;
   initializeAdminStateIx(
     admin: Keypair,
@@ -99,7 +108,7 @@ export interface ICollateralFreeSolanaReNFT {
     adminStateAccount: PublicKey,
     fee: number
   ): Instruction;
-  setPayableAccount(
+  setPayableAccountIx(
     admin: Keypair,
     adminStateAccount: PublicKey,
     adminTokenAccount: PublicKey
