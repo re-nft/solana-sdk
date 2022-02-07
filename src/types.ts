@@ -24,9 +24,9 @@ export interface Bucket {
 
 export interface EscrowState {
   pdaTokenAccount: PublicKey;
-  initializer: PublicKey;
+  lender: PublicKey;
   tempNftAccount: PublicKey;
-  initializerTokenAccount: PublicKey;
+  lenderTokenAccount: PublicKey;
   dailyRentPrice: u64;
   currentRenters: number;
   maxRenters: number;
@@ -55,9 +55,9 @@ export interface ICollateralFreeSolanaReNFT {
   startLendingIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
-    initializerTokenAccount: PublicKey,
+    lenderTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
+    escrowStateAccount: PublicKey,
     adminStateAccount: PublicKey,
     dailyRentPrice: u64,
     maxRenters: number,
@@ -66,15 +66,15 @@ export interface ICollateralFreeSolanaReNFT {
   stopLendingIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
-    initializerNftAccount: PublicKey,
+    lenderNftAccount: PublicKey,
     pdaTokenAccount: PublicKey,
-    escrowAccount: PublicKey
+    escrowStateAccount: PublicKey
   ): Instruction;
   startRentingIx(
     renter: Keypair,
     tempTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
+    escrowStateAccount: PublicKey,
     rentAmount: number,
     rentDuration: number
   ): Instruction;
@@ -82,18 +82,18 @@ export interface ICollateralFreeSolanaReNFT {
     renter: Keypair,
     pdaTokenAccount: PublicKey,
     renterTokenAccount: PublicKey,
-    initializerTokenAccount: PublicKey,
+    lenderTokenAccount: PublicKey,
     adminTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
+    escrowStateAccount: PublicKey,
     adminStateAccount: PublicKey,
     rentedAt: i64
   ): Instruction;
   claimRentIx(
     lender: Keypair,
     pdaTokenAccount: PublicKey,
-    initializerTokenAccount: PublicKey,
+    lenderTokenAccount: PublicKey,
     adminTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
+    escrowStateAccount: PublicKey,
     adminStateAccount: PublicKey,
     renterAddress: PublicKey,
     rentedAt: i64
