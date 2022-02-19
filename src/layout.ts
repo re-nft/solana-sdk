@@ -1,5 +1,4 @@
 import {
-  Layout,
   struct,
   greedy,
   union,
@@ -9,11 +8,12 @@ import {
   ns64,
   nu64,
   seq,
+  Layout,
   LayoutObject,
 } from '@solana/buffer-layout';
-import { PublicKey } from '@solana/web3.js';
+import { publicKey } from '@solana/buffer-layout-utils';
 import { BN } from 'bn.js';
-import { AdminState, EscrowState } from './types';
+import { AdminState, EscrowState, Bucket, Renting } from './types';
 
 export class i64 extends BN {
   toBuffer(): Buffer {
@@ -46,26 +46,8 @@ export class i64 extends BN {
   }
 }
 
-class PublicKeyLayout extends Layout {
-  constructor(property?: string) {
-    super(32, property);
-  }
-
-  decode(b: Uint8Array, offset?: number): PublicKey {
-    return new PublicKey(super.decode(b, offset));
-  }
-
-  encode(src: PublicKey, b: Uint8Array, offset: number) {
-    return super.encode(src.toBuffer(), b, offset);
-  }
-}
-
-export function publicKeyLayout(property?: string): PublicKeyLayout {
-  return new PublicKeyLayout(property);
-}
-
 export const INSTRUCTION_LAYOUT = union(
-  u32('instruction'),
+  u32('instruction') as Layout<any>,
   null,
   'instruction'
 );
@@ -88,7 +70,7 @@ INSTRUCTION_LAYOUT.addVariant(
 INSTRUCTION_LAYOUT.addVariant(4, struct([ns64('rentedAt')]), 'StopRent');
 INSTRUCTION_LAYOUT.addVariant(
   5,
-  struct([publicKeyLayout('renterAddress'), ns64('rentedAt')]),
+  struct([publicKey('renterAddress'), ns64('rentedAt')]),
   'Claim'
 );
 INSTRUCTION_LAYOUT.addVariant(6, struct([u32('fee')]), 'InitializeAdminState');
@@ -100,21 +82,25 @@ export function encodeInstruction(instruction: LayoutObject) {
   return b.slice(0, INSTRUCTION_LAYOUT.encode(instruction, b));
 }
 
-const renting_struct = struct([
-  publicKeyLayout('renter'),
+const renting_struct = struct<Renting>([
+  publicKey('renter'),
   ns64('rentedAt'),
   u16('rentAmount'),
   u8('rentDuration'),
 ]);
 
-const bucket_struct = struct([renting_struct, u32('hash'), u8('_align')]);
+const bucket_struct = struct<Bucket>([
+  renting_struct,
+  u32('hash'),
+  u8('_align'),
+]);
 
-export const ESCROW_LAYOUT = struct(
+export const ESCROW_LAYOUT = struct<EscrowState>(
   [
-    publicKeyLayout('pdaTokenAccount'),
-    publicKeyLayout('lender'),
-    publicKeyLayout('tempNftAccount'),
-    publicKeyLayout('lenderTokenAccount'),
+    publicKey('pdaTokenAccount'),
+    publicKey('lender'),
+    publicKey('tempNftAccount'),
+    publicKey('lenderTokenAccount'),
     nu64('dailyRentPrice'),
     u32('currentRenters'),
     u32('maxRenters'),
@@ -136,11 +122,8 @@ export function decodeEscrowStateData(b: Buffer): EscrowState {
 }
 
 const NUM_MINT_TOKENS = 2;
-export const ADMIN_STATE_LAYOUT = struct(
-  [
-    publicKeyLayout('pdaTokenAccount'),
-    seq(publicKeyLayout(), NUM_MINT_TOKENS, 'tokenAccounts'),
-  ],
+export const ADMIN_STATE_LAYOUT = struct<AdminState>(
+  [u32('fee'), seq(publicKey(), NUM_MINT_TOKENS, 'tokenAccounts')],
   'admin'
 );
 

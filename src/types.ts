@@ -6,7 +6,6 @@ import {
   Transaction,
   TransactionSignature,
 } from '@solana/web3.js';
-import { u64 } from '@solana/spl-token';
 import { i64 } from './layout';
 
 export interface Renting {
@@ -27,7 +26,7 @@ export interface EscrowState {
   lender: PublicKey;
   tempNftAccount: PublicKey;
   lenderTokenAccount: PublicKey;
-  dailyRentPrice: u64;
+  dailyRentPrice: bigint;
   currentRenters: number;
   maxRenters: number;
   maxRentDuration: number;
@@ -59,7 +58,7 @@ export interface ICollateralFreeSolanaReNFT {
     pdaTokenAccount: PublicKey,
     escrowStateAccount: PublicKey,
     adminStateAccount: PublicKey,
-    dailyRentPrice: u64,
+    dailyRentPrice: bigint,
     maxRenters: number,
     maxRentDuration: number
   ): Instruction;
@@ -77,7 +76,7 @@ export interface ICollateralFreeSolanaReNFT {
     newPdaTokenAccount: PublicKey,
     escrowStateAccount: PublicKey,
     adminStateAccount: PublicKey,
-    dailyRentPrice: u64,
+    dailyRentPrice: bigint,
     maxRentDuration: number
   ): Instruction;
   rentIx(
