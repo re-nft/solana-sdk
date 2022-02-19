@@ -14,7 +14,7 @@ const COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID = new PublicKey(
 );
 
 export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
-  public startLendingIx(
+  public lendIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
     lenderTokenAccount: PublicKey,
@@ -39,7 +39,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       keys,
       programId,
       data: encodeInstruction({
-        StartLending: {
+        StartLend: {
           dailyRentPrice,
           maxRenters,
           maxRentDuration,
@@ -55,7 +55,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       signers: [signer],
     };
   }
-  public stopLendingIx(
+  public stopLendIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
     lenderNftAccount: PublicKey,
@@ -80,7 +80,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       keys,
       programId,
       data: encodeInstruction({
-        StopLending: {},
+        StopLend: {},
       }),
     });
 
@@ -93,7 +93,51 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       signers: [signer],
     };
   }
-  public startRentingIx(
+  public editLendIx(
+    lender: Keypair,
+    lenderTokenAccount: PublicKey,
+    oldPdaTokenAccount: PublicKey,
+    newPdaTokenAccount: PublicKey,
+    escrowStateAccount: PublicKey,
+    adminStateAccount: PublicKey,
+    dailyRentPrice: u64,
+    maxRentDuration: number
+  ): Instruction {
+    const keys = [
+      { pubkey: lenderTokenAccount, isSigner: false, isWritable: false },
+      { pubkey: oldPdaTokenAccount, isSigner: false, isWritable: true },
+      { pubkey: newPdaTokenAccount, isSigner: false, isWritable: true },
+      { pubkey: escrowStateAccount, isSigner: false, isWritable: true },
+      { pubkey: adminStateAccount, isSigner: false, isWritable: false },
+      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+      {
+        pubkey: COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID,
+        isSigner: false,
+        isWritable: false,
+      },
+      { pubkey: lender.publicKey, isSigner: true, isWritable: false },
+    ];
+    const programId = COLLATERAL_FREE_SOLANA_RENFT_PROGRAM_ID;
+    const transactionInstruction = new TransactionInstruction({
+      keys,
+      programId,
+      data: encodeInstruction({
+        EditLend: {
+          dailyRentPrice,
+          maxRentDuration,
+        },
+      }),
+    });
+    const signer: Signer = {
+      publicKey: lender.publicKey,
+      secretKey: lender.secretKey,
+    };
+    return {
+      transactionInstructions: [transactionInstruction],
+      signers: [signer],
+    };
+  }
+  public rentIx(
     renter: Keypair,
     tempTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
@@ -118,7 +162,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       keys,
       programId,
       data: encodeInstruction({
-        StartRenting: { rentAmount, rentDuration },
+        Rent: { rentAmount, rentDuration },
       }),
     });
 
@@ -131,7 +175,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       signers: [signer],
     };
   }
-  public stopRentingIx(
+  public stopRentIx(
     renter: Keypair,
     pdaTokenAccount: PublicKey,
     renterTokenAccount: PublicKey,
@@ -161,7 +205,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       keys,
       programId,
       data: encodeInstruction({
-        StopRenting: { rentedAt },
+        StopRent: { rentedAt },
       }),
     });
     const signer: Signer = {
@@ -173,7 +217,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       signers: [signer],
     };
   }
-  public claimRentIx(
+  public claimIx(
     lender: Keypair,
     pdaTokenAccount: PublicKey,
     lenderTokenAccount: PublicKey,
@@ -202,7 +246,7 @@ export class CollateralFreeSolanaReNFT implements ICollateralFreeSolanaReNFT {
       keys,
       programId,
       data: encodeInstruction({
-        ClaimRent: { renterAddress, rentedAt },
+        Claim: { renterAddress, rentedAt },
       }),
     });
     const signer: Signer = {

@@ -52,7 +52,7 @@ export interface Instruction {
 }
 
 export interface ICollateralFreeSolanaReNFT {
-  startLendingIx(
+  lendIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
     lenderTokenAccount: PublicKey,
@@ -63,14 +63,24 @@ export interface ICollateralFreeSolanaReNFT {
     maxRenters: number,
     maxRentDuration: number
   ): Instruction;
-  stopLendingIx(
+  stopLendIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
     lenderNftAccount: PublicKey,
     pdaTokenAccount: PublicKey,
     escrowStateAccount: PublicKey
   ): Instruction;
-  startRentingIx(
+  editLendIx(
+    lender: Keypair,
+    lenderTokenAccount: PublicKey,
+    oldPdaTokenAccount: PublicKey,
+    newPdaTokenAccount: PublicKey,
+    escrowStateAccount: PublicKey,
+    adminStateAccount: PublicKey,
+    dailyRentPrice: u64,
+    maxRentDuration: number
+  ): Instruction;
+  rentIx(
     renter: Keypair,
     tempTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
@@ -78,7 +88,7 @@ export interface ICollateralFreeSolanaReNFT {
     rentAmount: number,
     rentDuration: number
   ): Instruction;
-  stopRentingIx(
+  stopRentIx(
     renter: Keypair,
     pdaTokenAccount: PublicKey,
     renterTokenAccount: PublicKey,
@@ -88,7 +98,7 @@ export interface ICollateralFreeSolanaReNFT {
     adminStateAccount: PublicKey,
     rentedAt: i64
   ): Instruction;
-  claimRentIx(
+  claimIx(
     lender: Keypair,
     pdaTokenAccount: PublicKey,
     lenderTokenAccount: PublicKey,

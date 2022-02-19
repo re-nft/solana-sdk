@@ -64,27 +64,36 @@ export function publicKeyLayout(property?: string): PublicKeyLayout {
   return new PublicKeyLayout(property);
 }
 
-export const INSTRUCTION_LAYOUT = union(u8('instruction'), null, 'instruction');
+export const INSTRUCTION_LAYOUT = union(
+  u32('instruction'),
+  null,
+  'instruction'
+);
 INSTRUCTION_LAYOUT.addVariant(
   0,
   struct([nu64('dailyRentPrice'), u32('maxRenters'), u8('maxRentDuration')]),
-  'StartLending'
+  'Lend'
 );
-INSTRUCTION_LAYOUT.addVariant(1, struct([]), 'StopLending');
+INSTRUCTION_LAYOUT.addVariant(1, struct([]), 'StopLend');
 INSTRUCTION_LAYOUT.addVariant(
   2,
-  struct([u16('rentAmount'), u8('rentDuration')]),
-  'StartRenting'
+  struct([nu64('dailyRentPrice'), u8('maxRentDuration')]),
+  'EditLend'
 );
-INSTRUCTION_LAYOUT.addVariant(3, struct([ns64('rentedAt')]), 'StopRenting');
 INSTRUCTION_LAYOUT.addVariant(
-  4,
-  struct([publicKeyLayout('renterAddress'), ns64('rentedAt')]),
-  'ClaimRent'
+  3,
+  struct([u16('rentAmount'), u8('rentDuration')]),
+  'Rent'
 );
-INSTRUCTION_LAYOUT.addVariant(5, struct([u32('fee')]), 'InitializeAdminState');
-INSTRUCTION_LAYOUT.addVariant(6, struct([u32('fee')]), 'SetFee');
-INSTRUCTION_LAYOUT.addVariant(7, struct([]), 'SetPayableAccount');
+INSTRUCTION_LAYOUT.addVariant(4, struct([ns64('rentedAt')]), 'StopRent');
+INSTRUCTION_LAYOUT.addVariant(
+  5,
+  struct([publicKeyLayout('renterAddress'), ns64('rentedAt')]),
+  'Claim'
+);
+INSTRUCTION_LAYOUT.addVariant(6, struct([u32('fee')]), 'InitializeAdminState');
+INSTRUCTION_LAYOUT.addVariant(7, struct([u32('fee')]), 'SetFee');
+INSTRUCTION_LAYOUT.addVariant(8, struct([]), 'SetPayableAccount');
 
 export function encodeInstruction(instruction: LayoutObject) {
   const b = Buffer.alloc(100);
