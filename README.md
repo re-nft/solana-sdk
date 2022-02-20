@@ -13,4 +13,31 @@ Lend and rent any spl-token NFTs Solana. This library will make your life easier
 
 ## Usage
 
-TODO
+See [Example](./examples/example.js).
+
+## Developing
+
+### Build
+
+`yarn build`
+
+### Lint
+
+`yarn lint`
+
+### Test
+
+`yarn test`
+
+### Structure
+
+* solana-sdk
+  * src
+    * collateral-free-solana-renft.ts - methods to create ReNFT collateral-free instructions
+    * index.ts
+    * layout.ts - buffer layout of instructions and accounts (admin, escrow state)
+    * transaction.ts - transaction builder utilities
+    * types.ts
+    * util.ts - utilities
+
+
