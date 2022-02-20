@@ -15,9 +15,7 @@
     "build": "tsdx build",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "prepare": "tsdx build"
   },
   "peerDependencies": {},
   "husky": {
@@ -52,16 +50,6 @@
     "type": "git",
     "url": "https://github.com/re-nft/solana-sdk.git"
   },
-  "size-limit": [
-    {
-      "path": "dist/solana-sdk.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/solana-sdk.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "dependencies": {
     "@solana/buffer-layout": "^4.0.0",
     "@solana/buffer-layout-utils": "^0.2.0",
@@ -71,12 +59,10 @@
     "typescript": "^4.5.5"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.8",
     "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.3.0",
     "chai": "^4.3.6",
     "husky": "^7.0.4",
-    "size-limit": "^7.0.8",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1"
   }
