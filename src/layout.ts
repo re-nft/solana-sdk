@@ -123,7 +123,11 @@ export function decodeEscrowStateData(b: Buffer): EscrowState {
 
 const NUM_MINT_TOKENS = 2;
 export const ADMIN_STATE_LAYOUT = struct<AdminState>(
-  [u32('fee'), seq(publicKey(), NUM_MINT_TOKENS, 'tokenAccounts')],
+  [
+    seq(publicKey(), NUM_MINT_TOKENS, 'tokenAccounts'),
+    u32('fee'),
+    u8('isInitialized'),
+  ],
   'admin'
 );
 
