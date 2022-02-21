@@ -6,7 +6,6 @@ import {
   Transaction,
   TransactionSignature,
 } from '@solana/web3.js';
-import { u64 } from '@solana/spl-token';
 import { i64 } from './layout';
 
 export interface Renting {
@@ -16,17 +15,29 @@ export interface Renting {
   rentDuration: number;
 }
 
+export interface Bucket {
+  renting: Renting;
+  hash: number;
+  _align: number;
+}
+
 export interface EscrowState {
   pdaTokenAccount: PublicKey;
-  initializer: PublicKey;
+  lender: PublicKey;
   tempNftAccount: PublicKey;
-  initializerTokenAccount: PublicKey;
-  dailyRentPrice: u64;
+  lenderTokenAccount: PublicKey;
+  dailyRentPrice: bigint;
   currentRenters: number;
   maxRenters: number;
   maxRentDuration: number;
   isInitialized: boolean;
-  rentings: Renting[];
+  _align: number[];
+  rentings: Bucket[];
+}
+
+export interface AdminState {
+  fee: number;
+  tokenAccounts: PublicKey[];
 }
 
 export interface TransactionPayload {
@@ -40,43 +51,75 @@ export interface Instruction {
 }
 
 export interface ICollateralFreeSolanaReNFT {
-  startLendingIx(
+  lendIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
-    initializerTokenAccount: PublicKey,
+    lenderTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
-    dailyRentPrice: u64,
+    escrowStateAccount: PublicKey,
+    adminStateAccount: PublicKey,
+    dailyRentPrice: bigint,
     maxRenters: number,
     maxRentDuration: number
   ): Instruction;
-  stopLendingIx(
+  stopLendIx(
     lender: Keypair,
     tempNftAccount: PublicKey,
-    initializerNftAccount: PublicKey,
+    lenderNftAccount: PublicKey,
     pdaTokenAccount: PublicKey,
-    escrowAccount: PublicKey
+    escrowStateAccount: PublicKey
   ): Instruction;
-  startRentingIx(
+  editLendIx(
+    lender: Keypair,
+    lenderTokenAccount: PublicKey,
+    oldPdaTokenAccount: PublicKey,
+    newPdaTokenAccount: PublicKey,
+    escrowStateAccount: PublicKey,
+    adminStateAccount: PublicKey,
+    dailyRentPrice: bigint,
+    maxRentDuration: number
+  ): Instruction;
+  rentIx(
     renter: Keypair,
     tempTokenAccount: PublicKey,
     pdaTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
+    escrowStateAccount: PublicKey,
     rentAmount: number,
     rentDuration: number
   ): Instruction;
-  stopRentingIx(
+  stopRentIx(
     renter: Keypair,
     pdaTokenAccount: PublicKey,
     renterTokenAccount: PublicKey,
-    initializerTokenAccount: PublicKey,
-    escrowAccount: PublicKey,
-    rentedAt: u64
+    lenderTokenAccount: PublicKey,
+    adminTokenAccount: PublicKey,
+    escrowStateAccount: PublicKey,
+    adminStateAccount: PublicKey,
+    rentedAt: i64
   ): Instruction;
-  claimRentIx(
+  claimIx(
     lender: Keypair,
     pdaTokenAccount: PublicKey,
-    initializerTokenAccount: PublicKey,
-    escrowAccount: PublicKey
+    lenderTokenAccount: PublicKey,
+    adminTokenAccount: PublicKey,
+    escrowStateAccount: PublicKey,
+    adminStateAccount: PublicKey,
+    renterAddress: PublicKey,
+    rentedAt: i64
+  ): Instruction;
+  initializeAdminStateIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    fee: number
+  ): Instruction;
+  setFeeIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    fee: number
+  ): Instruction;
+  setPayableAccountIx(
+    admin: Keypair,
+    adminStateAccount: PublicKey,
+    adminTokenAccount: PublicKey
   ): Instruction;
 }
